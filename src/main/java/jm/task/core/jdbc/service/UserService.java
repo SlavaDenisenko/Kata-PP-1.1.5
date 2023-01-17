@@ -5,15 +5,15 @@ import jm.task.core.jdbc.model.User;
 import java.util.List;
 
 public interface UserService {
-    void createUsersTable();
+    void createUsersTable() throws ClassNotFoundException;
 
-    void dropUsersTable();
+    void dropUsersTable() throws ClassNotFoundException;
 
-    void saveUser(String name, String lastName, byte age);
+    void saveUser(String name, String lastName, byte age) throws ClassNotFoundException;
 
-    void removeUserById(long id);
+    void removeUserById(long id) throws ClassNotFoundException;
 
-    List<User> getAllUsers();
+    List<User> getAllUsers() throws ClassNotFoundException;
 
-    void cleanUsersTable();
+    void cleanUsersTable() throws ClassNotFoundException;
 }
