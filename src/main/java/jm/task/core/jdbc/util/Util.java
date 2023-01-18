@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class Util {
-    private Connection connection;
+    private static Connection connection;
 
     public Util() {
         String url = "jdbc:mysql://localhost/User?serverTimezone=Europe/Moscow&useSSL=false";
@@ -20,7 +20,7 @@ public class Util {
         }
     }
 
-    public Connection getConnection() {
+    public static Connection getConnection() {
         return connection;
     }
 }
