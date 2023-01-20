@@ -33,12 +33,15 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void saveUser(String name, String lastName, byte age) {
-        String sqlCommand = "INSERT INTO " + TABLE_NAME + " (name, lastName, age) VALUES ('"
-                + name + "', '" + lastName + "', '" + age + "')";
-
         try (Session session = Util.getSession()) {
             session.beginTransaction();
-            session.createSQLQuery(sqlCommand).addEntity(User.class).executeUpdate();
+
+            User user = new User();
+            user.setName(name);
+            user.setLastName(lastName);
+            user.setAge(age);
+
+            session.save(user);
             session.getTransaction().commit();
 
             System.out.println("User с именем – " + name + " добавлен в базу данных");
@@ -49,19 +52,26 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void removeUserById(long id) {
-        String sqlCommand = "DELETE FROM " + TABLE_NAME + " WHERE id = " + id;
+        try (Session session = Util.getSession()) {
+            session.beginTransaction();
 
-        querySession(sqlCommand);
+            User user = new User();
+            user.setId(id);
+
+            session.delete(user);
+            session.getTransaction().commit();
+        } catch (HibernateException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public List<User> getAllUsers() {
         List<User> userList = new ArrayList<>();
-        String sqlCommand = "SELECT * FROM " + TABLE_NAME;
 
         try (Session session = Util.getSession()) {
             session.beginTransaction();
-            userList = session.createSQLQuery(sqlCommand).addEntity(User.class).list();
+            userList = session.createQuery("FROM " + TABLE_NAME, User.class).list();
             session.getTransaction().commit();
         } catch (HibernateException e) {
             e.printStackTrace();
@@ -71,9 +81,13 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void cleanUsersTable() {
-        String sqlCommand = "DELETE FROM " + TABLE_NAME;
-
-        querySession(sqlCommand);
+        try (Session session = Util.getSession()) {
+            session.beginTransaction();
+            session.createQuery("DELETE FROM " + TABLE_NAME).executeUpdate();
+            session.getTransaction().commit();
+        } catch (HibernateException e) {
+            e.printStackTrace();
+        }
     }
 
     public void querySession(String sqlCommand) {
